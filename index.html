@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.min.js" integrity="sha512-n8IpKWzDnBOcBhRlHirMZOUvEq2bLRMuJGjuVqbzUJwtTsgwOgK5aS0c1JA647XWYfqvXve8k3PtZdzpipFjgg==" crossorigin="anonymous"></script>
+	<script src="https://unpkg.com/three@0.126.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="orbit.js"></script>
+    <title>THREE JS</title>
+</head>
+<body>
+    <script type="text/javascript">
+
+        const scene = new THREE.Scene();
+        scene.add(new THREE.AxesHelper(5));
+
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(2,2,5);
+        scene.add(light);
+
+        const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );     
+        camera.position.z = 2;
+        camera.lookAt(scene.position);
+        scene.add(camera);
+
+
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        document.body.appendChild( renderer.domElement );
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+
+        const bucketLoader = new THREE.GLTFLoader();
+
+        bucketLoader.load( '3D/bucket.glb', function ( gltf ) {
+
+            bucketRoot = gltf.scene;
+            bucketRoot.scale.set(0.0042, 0.0042, 0.0042);
+            bucketRoot.position.set(0.4, 0.25, 0.42);
+            scene.add( bucketRoot );
+            console.log(gltf);
+
+        }, function (xhr){ 
+            console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+
+        }, function ( error ) {
+
+            console.log( error );
+
+        } );
+
+        const frameLoader = new THREE.GLTFLoader();
+
+        frameLoader.load( '3D/frame.glb', function ( gltf ) {
+
+            frameRoot = gltf.scene;
+            frameRoot.scale.set(0.003, 0.003, 0.003);
+            scene.add( frameRoot );
+            console.log(gltf);
+
+        }, function (xhr){ 
+            console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+
+        }, function ( error ) {
+
+            console.log( error );
+
+        } );
+
+        window.addEventListener('resize', onWindowResize, false);
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            render();
+        }
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            console.log(bucketRoot.position.y)
+
+          
+            bucketRoot.position.y += 0.001;
+            // console.log(bucketRoot.position.y);
+            render();
+        }
+        function render() {
+            renderer.render(scene, camera);
+        }
+        animate();
+      </script>
+</body>
+</html>
